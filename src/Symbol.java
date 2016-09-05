@@ -11,6 +11,7 @@ public class Symbol {
   public Symbol(String lexeme, byte token, int address) {
     this.lexeme = lexeme;
     this.token = token;
+    this.type = "";
     this.address = address;
   }
 
