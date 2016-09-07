@@ -1,9 +1,10 @@
+
+
 public class Symbol {
   private String lexeme;
   private byte token;
   private String type;
   private int address;
-  private String t;
 
   public Symbol() {
 
