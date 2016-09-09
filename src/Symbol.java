@@ -56,4 +56,9 @@ public class Symbol {
         this.address = address;
     }
 
+    @Override
+    public String toString() {
+        return "Symbol{" + "lexeme=" + lexeme + ", token=" + token + ", type=" + type + ", address=" + address + '}';
+    }
+    
 }
