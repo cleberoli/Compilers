@@ -85,7 +85,7 @@ public class SymbolTable {
         table.put(";", new Symbol(";", SEMICOLON, ++add));
     }
 
-    public int searchId(String lexeme) {
+    public int searchAddress(String lexeme) {
         return table.get(lexeme).getAddress();
     }
 
@@ -93,14 +93,14 @@ public class SymbolTable {
         return table.get(lexeme);
     }
 
-    public int insertId(String lexeme) {
+    public Symbol insertId(String lexeme) {
         table.put(lexeme, new Symbol(lexeme, ID, ++add));
-        return table.get(lexeme).getAddress();
+        return table.get(lexeme);
     }
 
-    public int insertConst(String lexeme, String type) {
+    public Symbol insertConst(String lexeme, String type) {
         table.put(lexeme, new Symbol(lexeme, CONST, type, ++add));
-        return table.get(lexeme).getAddress();
+        return table.get(lexeme);
     }
 
 }

@@ -16,4 +16,3 @@ while (naoTerminou) begin
   n<-n+1;
   naoTerminou<-n<MAXITER;
 endwhile
-

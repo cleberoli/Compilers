@@ -1,0 +1,34 @@
+S -> {DEC} {COM}+
+DEC -> (int|boolean|byte|string) id[<-[-]val] {,id[<-[-]val]}; | 
+       final id <- [-]val;
+	   
+COM -> id <-EXP; | 
+       while'('EXP')' (COM | begin {COM} endwhile) | 
+	   if '('EXP')'(COM [else COM] | begin {COM} endif [else begin {COM} endelse]) |
+	   ; | 
+	   readln'('id')'; | 
+	   (write|writeln)'('EXP {,EXP}')';
+	   
+EXP -> EXS [(<|>|<=|>=|!=|=) EXS]
+
+EXS -> [+|-] T {(+|-|'||')T}
+
+T   -> F {(*|/|'&&')F}
+
+F   -> '('EXP')' | id | val | !F
+
+
+
+s 		-> {dec} {com}+
+dec 	-> (INT|BOOLEAN|BYTE|STRING) ID [RECEIVE [MINUS] CONST] {COMMA ID [RECEIVE [MINUS] CONST]} SEMICOLON |
+		    FINAL ID RECEIVE [MINUS] CONST SEMICOLON
+com		-> ID RECEIVE exp SEMICOLON | 
+           WHILE OPPAR exp CLPAR (com | BEGIN {com} ENDWHILE) | 
+		   IF OPPAR exp CLPAR (com [ELSE com] | BEGIN {com} ENDIF [ELSE BEGIN {com} ENDELSE]) |
+		   SEMICOLON | 
+		   READLN OPPAR ID CLPAR SEMICOLON | 
+		   (WRITE | WRITELN) OPPAR exp { COMMA exp } CLPAR SEMICOLON	   
+exp 	-> exs [(LESSTHAN | MORETHAN | LESSEQUAL | MOREEQUAL | DIFFERENT | EQUALS) exs]
+exs 	-> [PLUS | MINUS] ter {(PLUS | MINUS | OR) ter}
+ter   	-> fac {(TIMES | DIVIDE | AND) fac}
+fac   	-> OPPAR exp CLPAR | ID | CONST | NOT fac
