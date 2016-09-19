@@ -4,15 +4,18 @@ import java.io.BufferedReader;
 public class LexicalAnalyzer {
 
     SymbolTable symbols = new SymbolTable();
-    String lexeme = "";
-    boolean ler = true;
-    String file = "";
+    private String lexeme;
     private char c;
     private Symbol s;
     public static int line = 1;
-    public boolean ret = false;
-    public boolean EOF = false;
-    BufferedReader reader;
+    public boolean ret;
+    public boolean EOF;
+    
+    public LexicalAnalyzer() {
+        ret = false;
+        EOF = false;
+        lexeme = "";
+    }
 
     public Symbol getNextLexeme(BufferedReader file) throws Exception {
         int currentState = 0;
@@ -70,7 +73,7 @@ public class LexicalAnalyzer {
                         } else if (c == '\"') {
                             lexeme += c;
                             currentState = 10;
-                        } else if (c == -1) {
+                        } else if (c == -1 || c == 65535) {
                             currentState = finalState;
                             lexeme += c;
                             EOF = true;
@@ -384,12 +387,10 @@ public class LexicalAnalyzer {
                 s = symbols.searchSymbol(lexeme);
             } else if (isLetter(lexeme.charAt(0)) || lexeme.charAt(0) == '_') {
                 s = symbols.insertId(lexeme);
-            } else if (isDigit(lexeme.charAt(0))) {
-                if (lexeme.charAt(0) == '\"') {
-                    s = symbols.insertConst(lexeme, "string");
-                } else {
-                    s = symbols.insertConst(lexeme, "number");
-                }
+            } else if (lexeme.charAt(0) == '\"') {
+                s = symbols.insertConst(lexeme, "string");
+            } else {
+                s = symbols.insertConst(lexeme, "number");
             }
         }
 
@@ -434,7 +435,7 @@ public class LexicalAnalyzer {
         // 123 - {
         // 124 - |
         // 125 - }
-        return isLetter(c) || isDigit(c) || (32 <= c && c <= 34) || (38 <= c && c <= 47) || (58 <= c && c <= 63) || c == 91 || c == 93 || c == 95 || (123 <= c && c <= 125) || (8 <= c && c <= 11) || c == 13 || c == 32 || c == -1;
+        return isLetter(c) || isDigit(c) || (32 <= c && c <= 34) || (38 <= c && c <= 47) || (58 <= c && c <= 63) || c == 91 || c == 93 || c == 95 || (123 <= c && c <= 125) || (8 <= c && c <= 11) || c == 13 || c == 32 || c == -1 || c == 65535;
     }
 
 }
