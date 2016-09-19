@@ -10,7 +10,7 @@ public class LexicalAnalyzer {
     public static int line = 1;
     public boolean ret;
     public boolean EOF;
-    
+
     public LexicalAnalyzer() {
         ret = false;
         EOF = false;
@@ -383,7 +383,9 @@ public class LexicalAnalyzer {
         }
 
         if (!EOF) {
-            if (symbols.searchSymbol(lexeme) != null) {
+            if (lexeme.equals("TRUE") || lexeme.equals("FALSE")) {
+                s = symbols.insertConst(lexeme, "logicalg");
+            } else if (symbols.searchSymbol(lexeme) != null) {
                 s = symbols.searchSymbol(lexeme);
             } else if (isLetter(lexeme.charAt(0)) || lexeme.charAt(0) == '_') {
                 s = symbols.insertId(lexeme);
