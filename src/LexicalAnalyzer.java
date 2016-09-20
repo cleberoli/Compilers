@@ -73,7 +73,7 @@ public class LexicalAnalyzer {
                         } else if (c == '\"') {
                             lexeme += c;
                             currentState = 10;
-                        } else if (c == -1 || c == 65535) {
+                        } else if (c == 65535) {
                             currentState = finalState;
                             lexeme += c;
                             EOF = true;
@@ -384,16 +384,18 @@ public class LexicalAnalyzer {
 
         if (!EOF) {
             if (lexeme.equals("TRUE") || lexeme.equals("FALSE")) {
-                s = symbols.insertConst(lexeme, "logicalg");
+                s = symbols.insertConst(lexeme, "");
             } else if (symbols.searchSymbol(lexeme) != null) {
                 s = symbols.searchSymbol(lexeme);
             } else if (isLetter(lexeme.charAt(0)) || lexeme.charAt(0) == '_') {
                 s = symbols.insertId(lexeme);
             } else if (lexeme.charAt(0) == '\"') {
-                s = symbols.insertConst(lexeme, "string");
+                s = symbols.insertConst(lexeme, "");
             } else {
-                s = symbols.insertConst(lexeme, "number");
+                s = symbols.insertConst(lexeme, "");
             }
+        } else {
+            s = new Symbol("EOF", Byte.MAX_VALUE, -1);
         }
 
         return s;

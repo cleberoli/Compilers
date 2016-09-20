@@ -1,8 +1,1 @@
-/* nao deveria funcionar */
-
-string nome;
-int n <- 10;
-
-if (n > nome) write("Sim: "); else write("Nao: ")
-
-	
+if (n > nome) write("Sim: "); else write("Nao: ");

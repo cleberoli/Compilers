@@ -1,6 +1,6 @@
 
 /* deveria funcionar */
 
-boolean verdadeiro <- falso;
+boolean verdadeiro <- FALSE;
 int n;
-if ( ( n / m ) !=  n * n )  writeln("Sim"); else writeln("nao"); 
+if ( ( n / m ) !=  n * n )  writeln("Sim"); else writeln("nao");

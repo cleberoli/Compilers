@@ -45,6 +45,8 @@ public class SymbolTable {
 
     public final byte ID = 35;
     public final byte CONST = 36;
+    
+    public final byte EOF = Byte.MAX_VALUE;
 
     public SymbolTable() {
         table = new HashMap<>();

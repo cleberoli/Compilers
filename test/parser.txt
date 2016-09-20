@@ -1,0 +1,25 @@
+exemplo1 - ok
+exemplo2 - 3:token nao esperado [int]
+exemplo3 - 3:token nao esperado [listadeids]
+exemplo4 - 4:token nao esperado [palavra92]
+
+prog1 - 7:token nao esperado [string]
+prog2 - ok
+prog3 - 7:fim de arquivo nao esperado.
+prog4 - ok
+prog5 - ok
+prog6 - ok
+prog7 - ok
+prog8 - ok
+prog9 - ok
+
+teste_e1 - 1:token nao esperado [10]
+teste_e2 - 4:token nao esperado [x]
+teste_e3 - 8:token nao esperado [int]
+teste_e4 - ok
+teste_e5 - ok
+teste_e6 - 3:caractere invalido.
+teste_e7 - ok
+teste_e8 - 6:lexema nao indentificao [0x1d]
+teste_e9 - ok
+teste_e10 - 6:lexema nao indentificao [0x1d]

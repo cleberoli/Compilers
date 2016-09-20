@@ -1,6 +1,6 @@
 
 /* deveria funcionar */
 
-boolean verdadeiro <- falso;
+boolean verdadeiro <- FALSE;
 int n;
-if (!verdadeiro)  readln(n); 
+if (!verdadeiro)  readln(n);

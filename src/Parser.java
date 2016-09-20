@@ -21,18 +21,19 @@ public class Parser {
 
     private void matchToken(byte token) {
         try {
-            if (s.getToken() == token) {
-                System.out.println(s.getLexeme());
-                s = lexical.getNextLexeme(file);
-            } else if (lexical.EOF) {
-                System.err.println(LexicalAnalyzer.line + ":fim de arquivo nao esperado.");
-                System.exit(0);
-            } else {
-                System.err.println(LexicalAnalyzer.line + ":token nao esperado [" + s.getLexeme() + "]");
-                System.exit(0);
+            if (!lexical.EOF) {
+                if (s.getToken() == token) {
+                    s = lexical.getNextLexeme(file);
+                } else if (s == null) {
+                    System.err.println(LexicalAnalyzer.line + ":fim de arquivo nao esperado.");
+                    System.exit(0);
+                } else {
+                    System.err.println(LexicalAnalyzer.line + ":token nao esperado [" + s.getLexeme() + "]");
+                    System.exit(0);
+                }
             }
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("matchToken: " + e.getMessage());
         }
 
     }
@@ -41,10 +42,15 @@ public class Parser {
         while (s.getToken() == table.INT || s.getToken() == table.BOOLEAN || s.getToken() == table.BYTE || s.getToken() == table.STRING || s.getToken() == table.FINAL) {
             D();
         }
+
+        if (s.getToken() == table.EOF) {
+            System.err.println(LexicalAnalyzer.line + ":fim de arquivo nao esperado.");
+            System.exit(0);
+        }
+
         do {
             C();
-        } while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN);
-
+        } while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN);
         if (!lexical.EOF) {
             System.err.println(LexicalAnalyzer.line + ":token nao esperado [" + s.getLexeme() + "]");
             System.exit(0);
@@ -111,7 +117,7 @@ public class Parser {
             if (s.getToken() == table.BEGIN) {
                 matchToken(table.BEGIN);
 
-                while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
+                while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
                     C();
                 }
 
@@ -128,7 +134,7 @@ public class Parser {
             if (s.getToken() == table.BEGIN) {
                 matchToken(table.BEGIN);
 
-                while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
+                while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
                     C();
                 }
 
@@ -138,7 +144,7 @@ public class Parser {
                     matchToken(table.ELSE);
                     matchToken(table.BEGIN);
 
-                    while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
+                    while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
                         C();
                     }
 
@@ -174,8 +180,8 @@ public class Parser {
             while (s.getAddress() == table.COMMA) {
                 matchToken(table.COMMA);
                 E();
-
             }
+
             matchToken(table.CLPAR);
             matchToken(table.SEMICOLON);
         }
@@ -184,7 +190,7 @@ public class Parser {
     private void E() throws Exception {
         X();
 
-        if (s.getToken() == table.LESSTHAN || s.getToken() == table.MORETHAN || s.getToken() == table.LESSEQUAL || s.getToken() == table.MORETHAN || s.getToken() == table.DIFFERENT || s.getToken() == table.EQUALS) {
+        if (s.getToken() == table.LESSTHAN || s.getToken() == table.MORETHAN || s.getToken() == table.LESSEQUAL || s.getToken() == table.MOREEQUAL || s.getToken() == table.DIFFERENT || s.getToken() == table.EQUALS) {
             matchToken(s.getToken());
             X();
         }
@@ -206,7 +212,7 @@ public class Parser {
     private void T() throws Exception {
         F();
 
-        while (s.getToken() == table.MINUS || s.getToken() == table.DIVIDE || s.getToken() == table.AND) {
+        while (s.getToken() == table.TIMES || s.getToken() == table.DIVIDE || s.getToken() == table.AND) {
             matchToken(s.getToken());
             F();
         }
