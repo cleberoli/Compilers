@@ -142,22 +142,36 @@ public class Parser {
 
                 if (s.getToken() == table.ELSE) {
                     matchToken(table.ELSE);
-                    matchToken(table.BEGIN);
 
-                    while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
+                    if (s.getToken() == table.BEGIN) {
+                        matchToken(table.BEGIN);
+
+                        while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
+                            C();
+                        }
+
+                        matchToken(table.ENDELSE);
+                    } else {
                         C();
                     }
-
-                    matchToken(table.ENDELSE);
                 }
-
-                matchToken(table.ENDWHILE);
             } else {
                 C();
 
                 if (s.getToken() == table.ELSE) {
                     matchToken(table.ELSE);
-                    C();
+
+                    if (s.getToken() == table.BEGIN) {
+                        matchToken(table.BEGIN);
+
+                        while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
+                            C();
+                        }
+
+                        matchToken(table.ENDELSE);
+                    } else {
+                        C();
+                    }
                 }
             }
         } else if (s.getToken() == table.SEMICOLON) {

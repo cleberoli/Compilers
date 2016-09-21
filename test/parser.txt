@@ -13,7 +13,7 @@ prog7 - ok
 prog8 - ok
 prog9 - ok
 
-teste_e1 - 1:token nao esperado [10]
+teste_e1 - 1:token nao esperado [10]  
 teste_e2 - 4:token nao esperado [x]
 teste_e3 - 8:token nao esperado [int]
 teste_e4 - ok
@@ -23,3 +23,11 @@ teste_e7 - ok
 teste_e8 - 6:lexema nao indentificao [0x1d]
 teste_e9 - ok
 teste_e10 - 6:lexema nao indentificao [0x1d]
+
+duplos1 - ok
+duplos2 - ok
+duplos3 - ok
+duplos4 - ok
+duplos5 - ok
+duplos6 - ok
+duplos7 - ok
