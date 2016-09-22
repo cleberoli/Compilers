@@ -1,7 +1,8 @@
-/* deveria funcionar  */
+/* nao deveria funcionar  */
 
 
 while (naoTerminou || TRUE)
+    readln(n); /* nao deveria funcionar aqui*/
 	while (naoTerminou || TRUE)
 		begin
 			/* 1 comando  */
@@ -24,5 +25,3 @@ while (naoTerminou || TRUE)
 			/* 4 comando  */
 			naoTerminou<-n<MAXITER;
         endwhile
-
-		

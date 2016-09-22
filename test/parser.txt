@@ -13,7 +13,7 @@ prog7 - ok
 prog8 - ok
 prog9 - ok
 
-teste_e1 - 1:token nao esperado [10]  
+teste_e1 - 1:token nao esperado [10]
 teste_e2 - 4:token nao esperado [x]
 teste_e3 - 8:token nao esperado [int]
 teste_e4 - ok
@@ -31,3 +31,10 @@ duplos4 - ok
 duplos5 - ok
 duplos6 - ok
 duplos7 - ok
+duplos8 - ok
+duplos9 - ok
+duplos10 - ok
+duplos11 - ok
+duplos12 - 6:fim de arquivo nao esperado.
+duplos13 - 5:token nao esperado [st]
+duplos14 - 5:token nao esperado [string]

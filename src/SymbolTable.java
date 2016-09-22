@@ -1,7 +1,18 @@
-
+/*
+* Pontifical Catholic University of Minas Gerais
+* Institue of Exact Sciences and Technology
+* Compilers
+*
+* Authors: Cleber Oliveira, Karen Martins, and Sarah Almeida
+* IDs: 486564, 476140, 476181
+ */
 
 import java.util.HashMap;
 
+/**
+ * Table containing the reserved words and the IDs contained in the source
+ * files.
+ */
 public class SymbolTable {
 
     public HashMap<String, Symbol> table;
@@ -45,9 +56,13 @@ public class SymbolTable {
 
     public final byte ID = 35;
     public final byte CONST = 36;
-    
+
     public final byte EOF = Byte.MAX_VALUE;
 
+    /**
+     * Default constructor, it initializes the HashTable and adds the reserved
+     * words to the table
+     */
     public SymbolTable() {
         table = new HashMap<>();
         table.put("begin", new Symbol("begin", BEGIN, ++add));
@@ -87,22 +102,45 @@ public class SymbolTable {
         table.put(";", new Symbol(";", SEMICOLON, ++add));
     }
 
+    /**
+     * Searches the table for the desired lexeme
+     *
+     * @param lexeme desired lexeme
+     * @return address in the table
+     */
     public int searchAddress(String lexeme) {
         return table.get(lexeme).getAddress();
     }
 
+    /**
+     * Searches the table for the desired lexeme
+     *
+     * @param lexeme desired lexeme
+     * @return symbol in the table
+     */
     public Symbol searchSymbol(String lexeme) {
         return table.get(lexeme);
     }
 
+    /**
+     * Creates a new symbol with and inserts it into the table.
+     *
+     * @param lexeme new ID's lexeme
+     * @return reference to the new symbol in the table
+     */
     public Symbol insertId(String lexeme) {
         table.put(lexeme, new Symbol(lexeme, ID, ++add));
         return table.get(lexeme);
     }
 
-    public Symbol insertConst(String lexeme, String type) {
-        table.put(lexeme, new Symbol(lexeme, CONST, type, ++add));
-        return table.get(lexeme);
+    /**
+     * Creates a new constant symbol
+     *
+     * @param lexeme new CONST's lexeme
+     * @return reference to the new symbol
+     */
+    public Symbol insertConst(String lexeme) {
+        return new Symbol(lexeme, CONST, ++add);
     }
 
 }

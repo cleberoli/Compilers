@@ -1,22 +1,60 @@
+/*
+* Pontifical Catholic University of Minas Gerais
+* Institue of Exact Sciences and Technology
+* Compilers
+*
+* Authors: Cleber Oliveira, Karen Martins, and Sarah Almeida
+* IDs: 486564, 476140, 476181
+*/
 
 import java.io.BufferedReader;
 
+/**
+ * Reads the file and processes each character in order to 
+ * identify the tokens in the source file.
+ */
 public class LexicalAnalyzer {
 
-    SymbolTable symbols = new SymbolTable();
+    SymbolTable symbols;
     private String lexeme;
     private char c;
     private Symbol s;
+
+    /**
+     * The current line being processed. 
+     */
     public static int line = 1;
+    
+    /**
+     * Return variable, when it's true it means that we have read a character 
+     * that doesn't belong to the previous lexeme so we have to return it.
+     */
     public boolean ret;
+    
+    /**
+     * End of file.
+     */
     public boolean EOF;
 
-    public LexicalAnalyzer() {
+    /**
+     * Default constructor, it initializes the variables that will be used 
+     * during its execution, setting ret = false and EOF = false.
+     * @param table SymbolTable that will contain all references to be tokens.
+     */
+    public LexicalAnalyzer(SymbolTable table) {
+        symbols = table;
         ret = false;
         EOF = false;
-        lexeme = "";
     }
 
+    /**
+     * Processes each character and verifies if they correspond to a known token 
+     * of the language L. This method is implemented based on the automaton 
+     * presented with the documentation. 
+     * @param file BufferedReader containing the information of the source file.
+     * @return Symbol s if the characters represents a token of the language.
+     * @throws Exception IOExecption due to file reading
+     */
     public Symbol getNextLexeme(BufferedReader file) throws Exception {
         int currentState = 0;
         final int finalState = 15;
@@ -49,7 +87,7 @@ public class LexicalAnalyzer {
                         } else if (c == '0') {
                             lexeme += c;
                             currentState = 3;
-                        } else if (isDigit(c)) {
+                        } else if (isDigit(c)) { // is different from 0
                             lexeme += c;
                             currentState = 2;
                         } else if (c == '/') {
@@ -73,14 +111,14 @@ public class LexicalAnalyzer {
                         } else if (c == '\"') {
                             lexeme += c;
                             currentState = 10;
-                        } else if (c == 65535) {
+                        } else if (c == -1 || c == 65535) {
                             currentState = finalState;
                             lexeme += c;
                             EOF = true;
                             file.close();
                         } else {
                             lexeme += c;
-                            System.err.println(line + ":lexema nao indentificao [" + lexeme + "]");
+                            System.err.println(line + ":lexema nao indentificado [" + lexeme + "].");
                             System.exit(0);
                         }
                     } else {
@@ -177,7 +215,7 @@ public class LexicalAnalyzer {
                             System.exit(0);
                         } else {
                             lexeme += c;
-                            System.err.println(line + ":lexema nao indentificao [" + lexeme + "]");
+                            System.err.println(line + ":lexema nao indentificado [" + lexeme + "].");
                             System.exit(0);
                         }
                     } else {
@@ -199,7 +237,7 @@ public class LexicalAnalyzer {
                             System.exit(0);
                         } else {
                             lexeme += c;
-                            System.err.println(line + ":lexema nao indentificao [" + lexeme + "]");
+                            System.err.println(line + ":lexema nao indentificado [" + lexeme + "].");
                             System.exit(0);
                         }
                     } else {
@@ -278,8 +316,7 @@ public class LexicalAnalyzer {
                             lexeme += c;
                             currentState = finalState;
                         } else if (c == 10) {
-                            System.err.println(line + ":lexema nao indentificao [" + lexeme + "]");
-                            System.exit(0);
+                            System.err.println(line + ":lexema nao indentificado [" + lexeme + "].");
                         } else if (c == -1) {
                             System.err.println(line + ":fim de arquivo nao esperado.");
                             System.exit(0);
@@ -305,7 +342,7 @@ public class LexicalAnalyzer {
                             System.exit(0);
                         } else {
                             lexeme += c;
-                            System.err.println(line + ":lexema nao indentificao [" + lexeme + "]");
+                            System.err.println(line + ":lexema nao indentificado [" + lexeme + "].");
                             System.exit(0);
                         }
                     } else {
@@ -327,7 +364,7 @@ public class LexicalAnalyzer {
                             System.exit(0);
                         } else {
                             lexeme += c;
-                            System.err.println(line + ":lexema nao indentificao [" + lexeme + "]");
+                            System.err.println(line + ":lexema nao indentificado [" + lexeme + "].");
                             System.exit(0);
                         }
                     } else {
@@ -384,36 +421,79 @@ public class LexicalAnalyzer {
 
         if (!EOF) {
             if (lexeme.equals("TRUE") || lexeme.equals("FALSE")) {
-                s = symbols.insertConst(lexeme, "");
+                s = symbols.insertConst(lexeme);
             } else if (symbols.searchSymbol(lexeme) != null) {
+                // token has already been inserted in the table
+                // covers all the reserved words that are inserted in the table
+                // at the begin of the execution
                 s = symbols.searchSymbol(lexeme);
             } else if (isLetter(lexeme.charAt(0)) || lexeme.charAt(0) == '_') {
-                s = symbols.insertId(lexeme);
+                // ID identified, tests if it has at most 255 characters
+                if (lexeme.length() >= 255) {
+                    System.err.println(line + ":lexema nao indentificao [" + lexeme + "].");
+                    System.exit(0);
+                } else {
+                    s = symbols.insertId(lexeme);
+                }
             } else if (lexeme.charAt(0) == '\"') {
-                s = symbols.insertConst(lexeme, "");
+                // STRING identified, tests if it has at most 256 characters
+                if (lexeme.length() >= 256) {
+                    System.err.println(line + ":lexema nao indentificao [" + lexeme + "].");
+                    System.exit(0);
+                } else {
+                    lexeme = lexeme.substring(1, lexeme.length() - 2) + "$";
+                }
+                s = symbols.insertConst(lexeme);
             } else {
-                s = symbols.insertConst(lexeme, "");
+                // it can only be a CONST
+                s = symbols.insertConst(lexeme);
             }
         } else {
+            // returns a fake symbol (EOF) in order to make future comparisons work
             s = new Symbol("EOF", Byte.MAX_VALUE, -1);
         }
 
         return s;
     }
 
+    /**
+     * Tests if the character is a decimal digit.
+     * @param c Character to be tested
+     * @return true if it is a decimal digit and false otherwise.
+     */
     private static boolean isDigit(char c) {
         return '0' <= c && c <= '9';
     }
 
+    /**
+     * Tests if the character is a letter.
+     * @param c Character to be tested
+     * @return true if it is a letter and false otherwise.
+     */
     private static boolean isLetter(char c) {
         return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
     }
 
+    /**
+     * Tests if the character is a hexadecimal digit.
+     * @param c Character to be tested
+     * @return true if it is a hexadecimal digit and false otherwise.
+     */
     private static boolean isHexadecimal(char c) {
         return ('0' <= c && c <= '9') || ('A' <= c && c <= 'F');
     }
 
+    /**
+     * Tests if the character is an allowed character in the file.
+     * @param c Character to be tested
+     * @return true if it is an allowed character and false otherwise.
+     */
     private static boolean isCharacter(char c) {
+        // 8 - back-space (\b)
+        // 9 - horizontal tabulation (\t)
+        // 10 - line feed (\n)
+        // 11 - vertical tabulation (\v)
+        // 13 - carriage return (\r)
         // 32 - spcace
         // 33 - !
         // 34 - "
@@ -439,7 +519,8 @@ public class LexicalAnalyzer {
         // 123 - {
         // 124 - |
         // 125 - }
-        return isLetter(c) || isDigit(c) || (32 <= c && c <= 34) || (38 <= c && c <= 47) || (58 <= c && c <= 63) || c == 91 || c == 93 || c == 95 || (123 <= c && c <= 125) || (8 <= c && c <= 11) || c == 13 || c == 32 || c == -1 || c == 65535;
+        // 65535 - eof
+        return isLetter(c) || isDigit(c) || (32 <= c && c <= 34) || (38 <= c && c <= 47) || (58 <= c && c <= 63) || c == 91 || c == 93 || c == 95 || (123 <= c && c <= 125) || (8 <= c && c <= 11) || c == 13 || c == 32 || c == 65535 || c == -1;
     }
 
 }

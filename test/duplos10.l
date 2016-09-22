@@ -1,11 +1,14 @@
-/* deveria funcionar  */
+/* nao deveria funcionar  */
 
 
 while (naoTerminou || TRUE)
 	while (naoTerminou || TRUE)
 		begin
 			/* 1 comando  */
+			writeln("Fim");
+			/* 2 comando  */
 			if ( ( n / m ) !=  n * n )
+			writeln("Fim"); /* nao deveria funcionar aq*/
 				if((m = 2*o) || (  n >= m/n))
 					begin
 						if ( ( n / m ) !=  n * n )  writeln("Sim"); else writeln("nao");
@@ -17,11 +20,11 @@ while (naoTerminou || TRUE)
 						writeln("Fim");
 						readln(n);
 					endelse
-			/* 2 comando  */
-			writeln("Ola' ",nome);
 			/* 3 comando  */
-			n<-n+1;
+			writeln("Ola' ",nome);
 			/* 4 comando  */
+			n<-n+1;
+			/* 5 comando  */
 			naoTerminou<-n<MAXITER;
         endwhile
 
