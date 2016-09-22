@@ -23,7 +23,7 @@ public class LexicalAnalyzer {
     /**
      * The current line being processed. 
      */
-    public static int line = 1;
+    public int line;
     
     /**
      * Return variable, when it's true it means that we have read a character 
@@ -42,6 +42,7 @@ public class LexicalAnalyzer {
      * @param table SymbolTable that will contain all references to be tokens.
      */
     public LexicalAnalyzer(SymbolTable table) {
+        line = 1;
         symbols = table;
         ret = false;
         EOF = false;

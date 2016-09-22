@@ -49,7 +49,7 @@ public class Parser {
         }
 
         if (s.getToken() == table.EOF) {
-            System.err.println(LexicalAnalyzer.line + ":fim de arquivo nao esperado.");
+            System.err.println(lexical.line + ":fim de arquivo nao esperado.");
             System.exit(0);
         }
 
@@ -58,7 +58,7 @@ public class Parser {
             C();
         } while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN);
         if (!lexical.EOF) {
-            System.err.println(LexicalAnalyzer.line + ":token nao esperado [" + s.getLexeme() + "].");
+            System.err.println(lexical.line + ":token nao esperado [" + s.getLexeme() + "].");
             System.exit(0);
         }
     }
@@ -211,7 +211,7 @@ public class Parser {
 
             matchToken(table.OPPAR);
             E();
-            while (s.getAddress() == table.COMMA) {
+            while (s.getToken() == table.COMMA) {
                 matchToken(table.COMMA);
                 E();
             }
@@ -299,10 +299,10 @@ public class Parser {
                 if (s.getToken() == token) {
                     s = lexical.getNextLexeme(file);
                 } else if (s == null) {
-                    System.err.println(LexicalAnalyzer.line + ":fim de arquivo nao esperado.");
+                    System.err.println(lexical.line + ":fim de arquivo nao esperado.");
                     System.exit(0);
                 } else {
-                    System.err.println(LexicalAnalyzer.line + ":token nao esperado [" + s.getLexeme() + "].");
+                    System.err.println(lexical.line + ":token nao esperado [" + s.getLexeme() + "].");
                     System.exit(0);
                 }
             }

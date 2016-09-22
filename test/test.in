@@ -1,4 +1,11 @@
-18
+22
+../test/prog4.l
+../test/prog5.l
+../test/prog6.l
+../test/prog7.l
+../test/prog8.l
+../test/prog9.l
+../test/duplos1.l
 ../test/duplos2.l
 ../test/duplos3.l
 ../test/duplos4.l
@@ -9,3 +16,8 @@
 ../test/duplos9.l
 ../test/duplos10.l
 ../test/duplos11.l
+../test/teste_e4.l
+../test/teste_e5.l
+../test/teste_e7.l
+../test/teste_e9.l
+../test/exemplo1.l
