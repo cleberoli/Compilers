@@ -211,7 +211,7 @@ public class LexicalAnalyzer {
                             // AND
                             lexeme += c;
                             currentState = finalState;
-                        } else if (c == -1) {
+                        } else if (c == -1 || c == 65535) {
                             System.err.println(line + ":fim de arquivo nao esperado.");
                             System.exit(0);
                         } else {
@@ -233,7 +233,7 @@ public class LexicalAnalyzer {
                             // OR
                             lexeme += c;
                             currentState = finalState;
-                        } else if (c == -1) {
+                        } else if (c == -1 || c == 65535) {
                             System.err.println(line + ":fim de arquivo nao esperado.");
                             System.exit(0);
                         } else {
@@ -318,7 +318,8 @@ public class LexicalAnalyzer {
                             currentState = finalState;
                         } else if (c == 10) {
                             System.err.println(line + ":lexema nao indentificado [" + lexeme + "].");
-                        } else if (c == -1) {
+                            System.exit(0);
+                        } else if (c == -1 || c == 65535) {
                             System.err.println(line + ":fim de arquivo nao esperado.");
                             System.exit(0);
                         } else {
@@ -338,7 +339,7 @@ public class LexicalAnalyzer {
                         if (isHexadecimal(c)) {
                             lexeme += c;
                             currentState = 12;
-                        } else if (c == -1) {
+                        } else if (c == -1 || c == 65535) {
                             System.err.println(line + ":fim de arquivo nao esperado.");
                             System.exit(0);
                         } else {
@@ -360,7 +361,7 @@ public class LexicalAnalyzer {
                             // CONST
                             lexeme += c;
                             currentState = finalState;
-                        } else if (c == -1) {
+                        } else if (c == -1 || c == 65535) {
                             System.err.println(line + ":fim de arquivo nao esperado.");
                             System.exit(0);
                         } else {
@@ -381,7 +382,7 @@ public class LexicalAnalyzer {
                         if (c == '*') {
                             lexeme += c;
                             currentState = 14;
-                        } else if (c == -1) {
+                        } else if (c == -1 || c == 65535) {
                             System.err.println(line + ":fim de arquivo nao esperado.");
                             System.exit(0);
                         } else {
@@ -405,7 +406,7 @@ public class LexicalAnalyzer {
                         } else if (c == '*') {
                             lexeme += c;
                             currentState = 14;
-                        } else if (c == -1) {
+                        } else if (c == -1 || c == 65535) {
                             System.err.println(line + ":fim de arquivo nao esperado.");
                             System.exit(0);
                         } else {
