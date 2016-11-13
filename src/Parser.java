@@ -67,10 +67,11 @@ public class Parser {
      * Procedure that implements the declarations.
      */
     private void D() {
+        Symbol id;
         // D -> (INT|BOOLEAN|BYTE|STRING) ID [RECEIVE [MINUS] CONST] {COMMA ID [RECEIVE [MINUS] CONST]} SEMICOLON
         if (s.getToken() == SymbolTable.INT || s.getToken() == SymbolTable.BOOLEAN || s.getToken() == SymbolTable.BYTE || s.getToken() == SymbolTable.STRING) {
             matchToken(s.getToken());
-            Symbol id = s;
+            id = s;
             matchToken(SymbolTable.ID);
             
             // semantic action [U1]
@@ -119,7 +120,7 @@ public class Parser {
         } // D -> FINAL ID RECEIVE [MINUS] CONST SEMICOLON
         else {
             matchToken(SymbolTable.FINAL);
-            Symbol id = s;
+            id = s;
             matchToken(SymbolTable.ID);
             
             // semantic action [U2]
@@ -157,6 +158,12 @@ public class Parser {
                 System.err.println(lexical.line + ":identificador nao declarado [" + id.getLexeme() + "].");
                 System.exit(0);
             } 
+            
+            // semantic action [C1]
+            if (id.getCategory() != Symbol.CATEGORY_VARIABLE) {
+                System.err.println(lexical.line + ":classe de identificador incompativel [" + id.getLexeme() + "].");
+                System.exit(0);
+            }
             
             matchToken(SymbolTable.RECEIVE);
             E();
@@ -244,6 +251,12 @@ public class Parser {
                 System.err.println(lexical.line + ":identificador nao declarado [" + id.getLexeme() + "].");
                 System.exit(0);
             } 
+            
+            // semantic action [C1]
+            if (id.getCategory() != Symbol.CATEGORY_VARIABLE) {
+                System.err.println(lexical.line + ":classe de identificador incompativel [" + id.getLexeme() + "].");
+                System.exit(0);
+            }
             
             matchToken(SymbolTable.CLPAR);
             matchToken(SymbolTable.SEMICOLON);
