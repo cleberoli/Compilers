@@ -44,11 +44,11 @@ public class Parser {
      */
     public void S() {
         // S -> {D}
-        while (s.getToken() == table.INT || s.getToken() == table.BOOLEAN || s.getToken() == table.BYTE || s.getToken() == table.STRING || s.getToken() == table.FINAL) {
+        while (s.getToken() == SymbolTable.INT || s.getToken() == SymbolTable.BOOLEAN || s.getToken() == SymbolTable.BYTE || s.getToken() == SymbolTable.STRING || s.getToken() == SymbolTable.FINAL) {
             D();
         }
 
-        if (s.getToken() == table.EOF) {
+        if (s.getToken() == SymbolTable.EOF) {
             System.err.println(lexical.line + ":fim de arquivo nao esperado.");
             System.exit(0);
         }
@@ -56,7 +56,7 @@ public class Parser {
         // S -> {C}+
         do {
             C();
-        } while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN);
+        } while (s.getToken() == SymbolTable.ID || s.getToken() == SymbolTable.WHILE || s.getToken() == SymbolTable.IF || s.getToken() == SymbolTable.SEMICOLON || s.getToken() == SymbolTable.READLN || s.getToken() == SymbolTable.WRITE || s.getToken() == SymbolTable.WRITELN);
         if (!lexical.EOF) {
             System.err.println(lexical.line + ":token nao esperado [" + s.getLexeme() + "].");
             System.exit(0);
@@ -68,48 +68,76 @@ public class Parser {
      */
     private void D() {
         // D -> (INT|BOOLEAN|BYTE|STRING) ID [RECEIVE [MINUS] CONST] {COMMA ID [RECEIVE [MINUS] CONST]} SEMICOLON
-        if (s.getToken() == table.INT || s.getToken() == table.BOOLEAN || s.getToken() == table.BYTE || s.getToken() == table.STRING) {
+        if (s.getToken() == SymbolTable.INT || s.getToken() == SymbolTable.BOOLEAN || s.getToken() == SymbolTable.BYTE || s.getToken() == SymbolTable.STRING) {
             matchToken(s.getToken());
-            matchToken(table.ID);
-
-            if (s.getToken() == table.RECEIVE) {
-                matchToken(table.RECEIVE);
-
-                if (s.getToken() == table.MINUS) {
-                    matchToken(table.MINUS);
-                }
-
-                matchToken(table.CONST);
+            Symbol id = s;
+            matchToken(SymbolTable.ID);
+            
+            // semantic action [U1]
+            if (id.getCategory() == Symbol.NO_CATEGORY) {
+                table.searchSymbol(id.getLexeme()).setCategory(Symbol.CATEGORY_VARIABLE);
+            } else {
+                System.err.println(lexical.line + ":identificador ja declarado [" + id.getLexeme() + "].");
+                System.exit(0);
             }
 
-            while (s.getToken() == table.COMMA) {
-                matchToken(table.COMMA);
-                matchToken(table.ID);
+            if (s.getToken() == SymbolTable.RECEIVE) {
+                matchToken(SymbolTable.RECEIVE);
 
-                if (s.getToken() == table.RECEIVE) {
-                    matchToken(table.RECEIVE);
+                if (s.getToken() == SymbolTable.MINUS) {
+                    matchToken(SymbolTable.MINUS);
+                }
 
-                    if (s.getToken() == table.MINUS) {
-                        matchToken(table.MINUS);
+                matchToken(SymbolTable.CONST);
+            }
+
+            while (s.getToken() == SymbolTable.COMMA) {
+                matchToken(SymbolTable.COMMA);
+                id = s;
+                matchToken(SymbolTable.ID);
+                
+                // semantic action [U1]
+                if (id.getCategory() == Symbol.NO_CATEGORY) {
+                    table.searchSymbol(id.getLexeme()).setCategory(Symbol.CATEGORY_VARIABLE);
+                } else {
+                    System.err.println(lexical.line + ":identificador ja declarado [" + id.getLexeme() + "].");
+                    System.exit(0);
+                }
+
+                if (s.getToken() == SymbolTable.RECEIVE) {
+                    matchToken(SymbolTable.RECEIVE);
+
+                    if (s.getToken() == SymbolTable.MINUS) {
+                        matchToken(SymbolTable.MINUS);
                     }
 
-                    matchToken(table.CONST);
+                    matchToken(SymbolTable.CONST);
                 }
             }
 
-            matchToken(table.SEMICOLON);
+            matchToken(SymbolTable.SEMICOLON);
         } // D -> FINAL ID RECEIVE [MINUS] CONST SEMICOLON
         else {
-            matchToken(table.FINAL);
-            matchToken(table.ID);
-            matchToken(table.RECEIVE);
+            matchToken(SymbolTable.FINAL);
+            Symbol id = s;
+            matchToken(SymbolTable.ID);
+            
+            // semantic action [U2]
+            if (id.getCategory() == Symbol.NO_CATEGORY) {
+                table.searchSymbol(id.getLexeme()).setCategory(Symbol.CATEGORY_CONSTANT);
+            } else {
+                System.err.println(lexical.line + ":identificador ja declarado [" + id.getLexeme() + "].");
+                System.exit(0);
+            }
+            
+            matchToken(SymbolTable.RECEIVE);
 
-            if (s.getToken() == table.MINUS) {
-                matchToken(table.MINUS);
+            if (s.getToken() == SymbolTable.MINUS) {
+                matchToken(SymbolTable.MINUS);
             }
 
-            matchToken(table.CONST);
-            matchToken(table.SEMICOLON);
+            matchToken(SymbolTable.CONST);
+            matchToken(SymbolTable.SEMICOLON);
         }
     }
 
@@ -117,57 +145,67 @@ public class Parser {
      * Procedure that implements the commands.
      */
     private void C() {
+        Symbol id;
+        
         // C -> ID RECEIVE E SEMICOLON
-        if (s.getToken() == table.ID) {
-            matchToken(table.ID);
-            matchToken(table.RECEIVE);
+        if (s.getToken() == SymbolTable.ID) {
+            id = s;
+            matchToken(SymbolTable.ID);
+            
+            // semantic action [U3]
+            if (id.getCategory() == Symbol.NO_CATEGORY) {
+                System.err.println(lexical.line + ":identificador nao declarado [" + id.getLexeme() + "].");
+                System.exit(0);
+            } 
+            
+            matchToken(SymbolTable.RECEIVE);
             E();
-            matchToken(table.SEMICOLON);
+            matchToken(SymbolTable.SEMICOLON);
         } // C -> WHILE OPPAR E CLPAR (BEGIN {C} ENDWHILE | C)
-        else if (s.getToken() == table.WHILE) {
-            matchToken(table.WHILE);
-            matchToken(table.OPPAR);
+        else if (s.getToken() == SymbolTable.WHILE) {
+            matchToken(SymbolTable.WHILE);
+            matchToken(SymbolTable.OPPAR);
             E();
-            matchToken(table.CLPAR);
+            matchToken(SymbolTable.CLPAR);
 
-            if (s.getToken() == table.BEGIN) {
-                matchToken(table.BEGIN);
+            if (s.getToken() == SymbolTable.BEGIN) {
+                matchToken(SymbolTable.BEGIN);
 
-                while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
+                while (s.getToken() == SymbolTable.ID || s.getToken() == SymbolTable.WHILE || s.getToken() == SymbolTable.IF || s.getToken() == SymbolTable.SEMICOLON || s.getToken() == SymbolTable.READLN || s.getToken() == SymbolTable.WRITE || s.getToken() == SymbolTable.WRITELN) {
                     C();
                 }
 
-                matchToken(table.ENDWHILE);
+                matchToken(SymbolTable.ENDWHILE);
             } else {
                 C();
             }
         } // C -> IF OPPAR E CLPAR (BEGIN {C} ENDIF [ELSE (BEGIN {C} ENDELSE | C)] | C [ELSE (BEGIN {C} ENDELSE | C)])
-        else if (s.getToken() == table.IF) {
-            matchToken(table.IF);
-            matchToken(table.OPPAR);
+        else if (s.getToken() == SymbolTable.IF) {
+            matchToken(SymbolTable.IF);
+            matchToken(SymbolTable.OPPAR);
             E();
-            matchToken(table.CLPAR);
+            matchToken(SymbolTable.CLPAR);
 
-            if (s.getToken() == table.BEGIN) {
-                matchToken(table.BEGIN);
+            if (s.getToken() == SymbolTable.BEGIN) {
+                matchToken(SymbolTable.BEGIN);
 
-                while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
+                while (s.getToken() == SymbolTable.ID || s.getToken() == SymbolTable.WHILE || s.getToken() == SymbolTable.IF || s.getToken() == SymbolTable.SEMICOLON || s.getToken() == SymbolTable.READLN || s.getToken() == SymbolTable.WRITE || s.getToken() == SymbolTable.WRITELN) {
                     C();
                 }
 
-                matchToken(table.ENDIF);
+                matchToken(SymbolTable.ENDIF);
 
-                if (s.getToken() == table.ELSE) {
-                    matchToken(table.ELSE);
+                if (s.getToken() == SymbolTable.ELSE) {
+                    matchToken(SymbolTable.ELSE);
 
-                    if (s.getToken() == table.BEGIN) {
-                        matchToken(table.BEGIN);
+                    if (s.getToken() == SymbolTable.BEGIN) {
+                        matchToken(SymbolTable.BEGIN);
 
-                        while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
+                        while (s.getToken() == SymbolTable.ID || s.getToken() == SymbolTable.WHILE || s.getToken() == SymbolTable.IF || s.getToken() == SymbolTable.SEMICOLON || s.getToken() == SymbolTable.READLN || s.getToken() == SymbolTable.WRITE || s.getToken() == SymbolTable.WRITELN) {
                             C();
                         }
 
-                        matchToken(table.ENDELSE);
+                        matchToken(SymbolTable.ENDELSE);
                     } else {
                         C();
                     }
@@ -175,49 +213,57 @@ public class Parser {
             } else {
                 C();
 
-                if (s.getToken() == table.ELSE) {
-                    matchToken(table.ELSE);
+                if (s.getToken() == SymbolTable.ELSE) {
+                    matchToken(SymbolTable.ELSE);
 
-                    if (s.getToken() == table.BEGIN) {
-                        matchToken(table.BEGIN);
+                    if (s.getToken() == SymbolTable.BEGIN) {
+                        matchToken(SymbolTable.BEGIN);
 
-                        while (s.getToken() == table.ID || s.getToken() == table.WHILE || s.getToken() == table.IF || s.getToken() == table.SEMICOLON || s.getToken() == table.READLN || s.getToken() == table.WRITE || s.getToken() == table.WRITELN) {
+                        while (s.getToken() == SymbolTable.ID || s.getToken() == SymbolTable.WHILE || s.getToken() == SymbolTable.IF || s.getToken() == SymbolTable.SEMICOLON || s.getToken() == SymbolTable.READLN || s.getToken() == SymbolTable.WRITE || s.getToken() == SymbolTable.WRITELN) {
                             C();
                         }
 
-                        matchToken(table.ENDELSE);
+                        matchToken(SymbolTable.ENDELSE);
                     } else {
                         C();
                     }
                 }
             }
         } // C -> SEMICOLON
-        else if (s.getToken() == table.SEMICOLON) {
-            matchToken(table.SEMICOLON);
+        else if (s.getToken() == SymbolTable.SEMICOLON) {
+            matchToken(SymbolTable.SEMICOLON);
         } // C -> READLN OPPAR ID CLPAR SEMICOLON
-        else if (s.getToken() == table.READLN) {
-            matchToken(table.READLN);
-            matchToken(table.OPPAR);
-            matchToken(table.ID);
-            matchToken(table.CLPAR);
-            matchToken(table.SEMICOLON);
+        else if (s.getToken() == SymbolTable.READLN) {
+            matchToken(SymbolTable.READLN);
+            matchToken(SymbolTable.OPPAR);
+            id = s;
+            matchToken(SymbolTable.ID);
+            
+            // semantic action [U3]
+            if (id.getCategory() == Symbol.NO_CATEGORY) {
+                System.err.println(lexical.line + ":identificador nao declarado [" + id.getLexeme() + "].");
+                System.exit(0);
+            } 
+            
+            matchToken(SymbolTable.CLPAR);
+            matchToken(SymbolTable.SEMICOLON);
         } // C -> (WRITE | WRITELN) OPPAR E {COMMA E} CLPAR SEMICOLON
         else {
-            if (s.getToken() == table.WRITE) {
-                matchToken(table.WRITE);
+            if (s.getToken() == SymbolTable.WRITE) {
+                matchToken(SymbolTable.WRITE);
             } else {
-                matchToken(table.WRITELN);
+                matchToken(SymbolTable.WRITELN);
             }
 
-            matchToken(table.OPPAR);
+            matchToken(SymbolTable.OPPAR);
             E();
-            while (s.getToken() == table.COMMA) {
-                matchToken(table.COMMA);
+            while (s.getToken() == SymbolTable.COMMA) {
+                matchToken(SymbolTable.COMMA);
                 E();
             }
 
-            matchToken(table.CLPAR);
-            matchToken(table.SEMICOLON);
+            matchToken(SymbolTable.CLPAR);
+            matchToken(SymbolTable.SEMICOLON);
         }
     }
 
@@ -228,7 +274,7 @@ public class Parser {
         // E -> X [(LESSTHAN | MORETHAN | LESSEQUAL | MOREEQUAL | DIFFERENT | EQUALS) X]
         X();
 
-        if (s.getToken() == table.LESSTHAN || s.getToken() == table.MORETHAN || s.getToken() == table.LESSEQUAL || s.getToken() == table.MOREEQUAL || s.getToken() == table.DIFFERENT || s.getToken() == table.EQUALS) {
+        if (s.getToken() == SymbolTable.LESSTHAN || s.getToken() == SymbolTable.MORETHAN || s.getToken() == SymbolTable.LESSEQUAL || s.getToken() == SymbolTable.MOREEQUAL || s.getToken() == SymbolTable.DIFFERENT || s.getToken() == SymbolTable.EQUALS) {
             matchToken(s.getToken());
             X();
         }
@@ -239,13 +285,13 @@ public class Parser {
      */
     private void X() {
         // X -> [PLUS | MINUS] T {(PLUS | MINUS | OR) T}
-        if (s.getToken() == table.PLUS || s.getToken() == table.MINUS) {
+        if (s.getToken() == SymbolTable.PLUS || s.getToken() == SymbolTable.MINUS) {
             matchToken(s.getToken());
         }
 
         T();
 
-        while (s.getToken() == table.PLUS || s.getToken() == table.MINUS || s.getToken() == table.OR) {
+        while (s.getToken() == SymbolTable.PLUS || s.getToken() == SymbolTable.MINUS || s.getToken() == SymbolTable.OR) {
             matchToken(s.getToken());
             T();
         }
@@ -258,7 +304,7 @@ public class Parser {
         // T -> F {(TIMES | DIVIDE | AND) F}
         F();
 
-        while (s.getToken() == table.TIMES || s.getToken() == table.DIVIDE || s.getToken() == table.AND) {
+        while (s.getToken() == SymbolTable.TIMES || s.getToken() == SymbolTable.DIVIDE || s.getToken() == SymbolTable.AND) {
             matchToken(s.getToken());
             F();
         }
@@ -268,20 +314,29 @@ public class Parser {
      * Procedure that implements the factors.
      */
     private void F() {
+        Symbol id;
+        
         // F -> OPPAR E CLPAR
-        if (s.getToken() == table.OPPAR) {
-            matchToken(table.OPPAR);
+        if (s.getToken() == SymbolTable.OPPAR) {
+            matchToken(SymbolTable.OPPAR);
             E();
-            matchToken(table.CLPAR);
+            matchToken(SymbolTable.CLPAR);
         } // F -> ID
-        else if (s.getToken() == table.ID) {
-            matchToken(table.ID);
+        else if (s.getToken() == SymbolTable.ID) {
+            id = s;
+            matchToken(SymbolTable.ID);
+            
+            // semantic action [U3]
+            if (id.getCategory() == Symbol.NO_CATEGORY) {
+                System.err.println(lexical.line + ":identificador nao declarado [" + id.getLexeme() + "].");
+                System.exit(0);
+            } 
         } // F -> CONST
-        else if (s.getToken() == table.CONST) {
-            matchToken(table.CONST);
+        else if (s.getToken() == SymbolTable.CONST) {
+            matchToken(SymbolTable.CONST);
         } // F -> NOT F
         else {
-            matchToken(table.NOT);
+            matchToken(SymbolTable.NOT);
             F();
         }
     }

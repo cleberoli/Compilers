@@ -43,6 +43,14 @@ public class Symbol {
         this.category = NO_CATEGORY;
         this.type = NO_TYPE;
     }
+    
+    public Symbol(String lexeme, byte token, byte type) {
+        this.lexeme = lexeme;
+        this.token = token;
+        this.address = -1;
+        this.category = NO_CATEGORY;
+        this.type = type;
+    }
 
     /**
      * Recovers the attribute lexeme of a symbol

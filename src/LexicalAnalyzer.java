@@ -423,7 +423,7 @@ public class LexicalAnalyzer {
 
         if (!EOF) {
             if (lexeme.equals("TRUE") || lexeme.equals("FALSE")) {
-                s = new Symbol(lexeme, SymbolTable.CONST);
+                s = new Symbol(lexeme, SymbolTable.CONST, Symbol.TYPE_LOGICAL);
             } else if (symbols.searchSymbol(lexeme) != null) {
                 // token has already been inserted in the table
                 // covers all the reserved words that are inserted in the table
@@ -445,10 +445,14 @@ public class LexicalAnalyzer {
                 } else {
                     lexeme = lexeme.substring(1, lexeme.length() - 2) + "$";
                 }
-                s = new Symbol(lexeme, SymbolTable.CONST);
+                s = new Symbol(lexeme, SymbolTable.CONST, Symbol.TYPE_STRING);
             } else {
-                // it can only be a CONST
-                s = new Symbol(lexeme, SymbolTable.CONST);
+                // it can only be a numerical CONST
+                if ((lexeme.length() > 1 && lexeme.charAt(1) == 'x') || (0 <= Integer.parseInt(lexeme) && Integer.parseInt(lexeme) <= 255)) {
+                    s = new Symbol(lexeme, SymbolTable.CONST, Symbol.TYPE_BYTE);
+                } else {
+                    s = new Symbol(lexeme, SymbolTable.CONST, Symbol.TYPE_INTEGER);
+                }
             }
         } else {
             // returns a fake symbol (EOF) in order to make future comparisons work

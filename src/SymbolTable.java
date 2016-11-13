@@ -16,7 +16,6 @@ import java.util.HashMap;
 public class SymbolTable {
 
     public HashMap<String, Symbol> table;
-    public static int key = -1;
 
     public static final byte BEGIN = 0;
     public static final byte FINAL = 1;
