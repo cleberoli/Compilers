@@ -1,0 +1,28 @@
+/* deveria funcionar */
+int x;
+int n;
+int m;
+boolean bool;
+byte b <- 0x11;
+byte b2 <- 255;
+final f <- 1;
+x <- -5 / b;
+n<- -5 + b;
+m<- (100 / 10) + (2*2) - b2;
+bool<-  m < n;
+x<- -5 * b;
+bool <- m > n;
+bool <-  m >= n;
+bool <-  m <= n;
+bool <-  (m = n);
+bool <-  (m != n);
+bool <- b > b2;
+bool <-  b >= b2;
+bool <-  b <= b2;
+bool <-  (b = b2);
+bool <-  (b != b2);
+bool <- b > m;
+bool <-  n >= b2;
+bool <-  b <= n;
+bool <-  (n = b2);
+bool <-  (m != b2);
