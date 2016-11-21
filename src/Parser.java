@@ -68,26 +68,26 @@ public class Parser {
      */
     private void D() {
         Symbol _Did, _Dconst;
-        byte _Dtype;
+        AuxiliarySymbol _D = new AuxiliarySymbol();
         boolean _Dminus, _Dinitialized;
         // D -> (INT|BOOLEAN|BYTE|STRING) ID [RECEIVE [MINUS] CONST] {COMMA ID [RECEIVE [MINUS] CONST]} SEMICOLON
         if (s.getToken() == SymbolTable.INT || s.getToken() == SymbolTable.BOOLEAN || s.getToken() == SymbolTable.BYTE || s.getToken() == SymbolTable.STRING) {
             
             // semantic action [T1]
             if (s.getToken() == SymbolTable.INT) {
-                _Dtype = Symbol.TYPE_INTEGER;
+                _D.setType(Symbol.TYPE_INTEGER);
             } 
             // semantic action [T2]
             else if (s.getToken() == SymbolTable.BOOLEAN) {
-                _Dtype = Symbol.TYPE_LOGICAL;
+                _D.setType(Symbol.TYPE_LOGICAL);
             }
             // semantic action [T3]
             else if (s.getToken() == SymbolTable.BYTE) {
-                _Dtype = Symbol.TYPE_BYTE;
+                _D.setType(Symbol.TYPE_BYTE);
             }
             // semantic action [T1]
             else {
-                _Dtype = Symbol.TYPE_STRING;
+                _D.setType(Symbol.TYPE_STRING);
             }
                 
             matchToken(s.getToken());
@@ -103,7 +103,7 @@ public class Parser {
             }
             
             // semantic action [T5]
-            table.searchSymbol(_Did.getLexeme()).setType(_Dtype);
+            table.searchSymbol(_Did.getLexeme()).setType(_D.getType());
             
             // semantic action [H1]
             _Dminus = false;
@@ -118,7 +118,7 @@ public class Parser {
                     matchToken(SymbolTable.MINUS);
                     
                     // semantic action [T6]
-                    if (_Dtype != Symbol.TYPE_INTEGER) {
+                    if (_D.getType() != Symbol.TYPE_INTEGER) {
                         System.err.println(lexical.line + ":tipos incompativeis.");
                         System.exit(0);
                     } 
@@ -134,7 +134,7 @@ public class Parser {
                 _Dinitialized = true;
                 
                 // semantic action [T7]
-                if ((_Dtype != _Dconst.getType()) && (_Dtype != Symbol.TYPE_INTEGER || _Dconst.getType() != Symbol.TYPE_BYTE)) {
+                if ((_D.getType() != _Dconst.getType()) && (_D.getType() != Symbol.TYPE_INTEGER || _Dconst.getType() != Symbol.TYPE_BYTE)) {
                     System.err.println(lexical.line + ":tipos incompativeis.");
                     System.exit(0);
                 } 
@@ -154,7 +154,7 @@ public class Parser {
                 }
                 
                 // semantic action [T5]
-                table.searchSymbol(_Did.getLexeme()).setType(_Dtype);
+                table.searchSymbol(_Did.getLexeme()).setType(_D.getType());
 
                 // semantic action [H1]
                 _Dminus = false;
@@ -169,7 +169,7 @@ public class Parser {
                         matchToken(SymbolTable.MINUS);
                         
                         // semantic action [T6]
-                        if (_Dtype != Symbol.TYPE_INTEGER) {
+                        if (_D.getType() != Symbol.TYPE_INTEGER) {
                             System.err.println(lexical.line + ":tipos incompativeis.");
                             System.exit(0);
                         } 
@@ -185,7 +185,7 @@ public class Parser {
                     _Dinitialized = true;
 
                     // semantic action [T7]
-                    if ((_Dtype != _Dconst.getType()) && (_Dtype != Symbol.TYPE_INTEGER || _Dconst.getType() != Symbol.TYPE_BYTE)) {
+                    if ((_D.getType() != _Dconst.getType()) && (_D.getType() != Symbol.TYPE_INTEGER || _Dconst.getType() != Symbol.TYPE_BYTE)) {
                         System.err.println(lexical.line + ":tipos incompativeis.");
                         System.exit(0);
                     } 
@@ -230,8 +230,6 @@ public class Parser {
                 table.searchSymbol(_Did.getLexeme()).setType(_Dconst.getType());
             }
             
-            System.out.println(table.searchSymbol(_Did.getLexeme()).getType());
-            
             matchToken(SymbolTable.SEMICOLON);
         }
     }
@@ -240,8 +238,8 @@ public class Parser {
      * Procedure that implements the commands.
      */
     private void C() {
+        AuxiliarySymbol _E = new AuxiliarySymbol();
         Symbol _Cid;
-        byte _Etype;
         boolean _ClineBreak;
         
         // C -> ID RECEIVE E SEMICOLON
@@ -262,10 +260,10 @@ public class Parser {
             }
             
             matchToken(SymbolTable.RECEIVE);
-            _Etype = E();
+            E(_E);
             
             // semantic action [T9]
-            if ((_Cid.getType() != _Etype) && (_Cid.getType() != Symbol.TYPE_INTEGER || _Etype != Symbol.TYPE_BYTE)) {
+            if ((_Cid.getType() != _E.getType()) && (_Cid.getType() != Symbol.TYPE_INTEGER || _E.getType() != Symbol.TYPE_BYTE)) {
                 System.err.println(lexical.line + ":tipos incompativeis.");
                 System.exit(0);
             } 
@@ -275,10 +273,10 @@ public class Parser {
         else if (s.getToken() == SymbolTable.WHILE) {
             matchToken(SymbolTable.WHILE);
             matchToken(SymbolTable.OPPAR);
-            _Etype = E();
+            E(_E);
             
             // semantic action [T10]
-            if (_Etype != Symbol.TYPE_LOGICAL) {
+            if (_E.getType() != Symbol.TYPE_LOGICAL) {
                 System.err.println(lexical.line + ":tipos incompativeis.");
                 System.exit(0);
             }
@@ -300,10 +298,10 @@ public class Parser {
         else if (s.getToken() == SymbolTable.IF) {
             matchToken(SymbolTable.IF);
             matchToken(SymbolTable.OPPAR);
-            _Etype = E();
+            E(_E);
             
             // semantic action [T10]
-            if (_Etype != Symbol.TYPE_LOGICAL) {
+            if (_E.getType() != Symbol.TYPE_LOGICAL) {
                 System.err.println(lexical.line + ":tipos incompativeis.");
                 System.exit(0);
             }
@@ -398,20 +396,20 @@ public class Parser {
             }
 
             matchToken(SymbolTable.OPPAR);
-            _Etype = E();
+            E(_E);
             
             // semantic action [T12]
-            if (_Etype == Symbol.TYPE_LOGICAL) {
+            if (_E.getType() == Symbol.TYPE_LOGICAL) {
                 System.err.println(lexical.line + ":tipos incompativeis.");
                 System.exit(0);
             }
             
             while (s.getToken() == SymbolTable.COMMA) {
                 matchToken(SymbolTable.COMMA);
-                _Etype = E();
+                E(_E);
                 
                 // semantic action [T12]
-                if (_Etype == Symbol.TYPE_LOGICAL) {
+                if (_E.getType() == Symbol.TYPE_LOGICAL) {
                     System.err.println(lexical.line + ":tipos incompativeis.");
                     System.exit(0);
                 }
@@ -425,13 +423,13 @@ public class Parser {
     /**
      * Procedure that implements the expressions.
      */
-    private byte E() {
-        byte _Etype, _X1type;
+    private void E(AuxiliarySymbol _E) {
+        AuxiliarySymbol _X1 = new AuxiliarySymbol();
         byte _Eoperator;
         
         // E -> X [(LESSTHAN | MORETHAN | LESSEQUAL | MOREEQUAL | DIFFERENT | EQUALS) X]
         // semantic action [T13]
-        _Etype = X();
+        X(_E);
         
         // semantic action [H5]
         _Eoperator = 0;
@@ -441,31 +439,29 @@ public class Parser {
             _Eoperator = s.getToken();
             
             matchToken(s.getToken());
-            _X1type = X();
+            X(_X1);
             
             // semantic action [T14]
             if (_Eoperator != SymbolTable.EQUALS) {
-                if (_Etype == Symbol.TYPE_LOGICAL || _Etype == Symbol.TYPE_STRING || _X1type == Symbol.TYPE_LOGICAL || _X1type == Symbol.TYPE_STRING) {
+                if (_E.getType() == Symbol.TYPE_LOGICAL || _E.getType() == Symbol.TYPE_STRING || _X1.getType() == Symbol.TYPE_LOGICAL || _X1.getType() == Symbol.TYPE_STRING) {
                     System.err.println(lexical.line + ":tipos incompativeis.");
                     System.exit(0);
                 }
             } else {
-                if ((_Etype == Symbol.TYPE_LOGICAL || _Etype == Symbol.TYPE_STRING || _X1type == Symbol.TYPE_LOGICAL || _X1type == Symbol.TYPE_STRING) && (_Etype == Symbol.TYPE_STRING && _X1type == Symbol.TYPE_STRING)) {
+                if ((_E.getType() == Symbol.TYPE_LOGICAL || _X1.getType() == Symbol.TYPE_LOGICAL || (_E.getType() == Symbol.TYPE_STRING ^ _X1.getType() == Symbol.TYPE_STRING))) {
                     System.err.println(lexical.line + ":tipos incompativeis.");
                     System.exit(0);
                 }
             }
-            _Etype = Symbol.TYPE_LOGICAL;
+            _E.setType(Symbol.TYPE_LOGICAL);
         }
-        
-        return _Etype;
     }
 
     /**
      * Procedure that implements the simple expressions.
      */
-    private byte X() {
-        byte _Xtype, _T1type;
+    private void X(AuxiliarySymbol _X) {
+        AuxiliarySymbol _T1 = new AuxiliarySymbol();
         boolean _Xoption, _Xminus, _Xplus, _Xlogical;
         
         // semantic action [H12]
@@ -488,10 +484,10 @@ public class Parser {
         }
         
         // semantic action [T15]
-        _Xtype = T();
+        T(_X);
         
         // semantic action [T16]
-        if (_Xoption && (_Xtype == Symbol.TYPE_STRING || _Xtype == Symbol.TYPE_LOGICAL)) {
+        if (_Xoption && (_X.getType() == Symbol.TYPE_STRING || _X.getType() == Symbol.TYPE_LOGICAL)) {
             System.err.println(lexical.line + ":tipos incompativeis.");
             System.exit(0);
         }
@@ -516,46 +512,44 @@ public class Parser {
                 }
             }
             matchToken(s.getToken());
-            _T1type = T();
+            T(_T1);
             
             // semantic action [T17]
             if (_Xlogical) {
-                if (_Xtype == Symbol.TYPE_LOGICAL || _T1type == Symbol.TYPE_LOGICAL) {
+                if (_X.getType() != Symbol.TYPE_LOGICAL || _T1.getType()!= Symbol.TYPE_LOGICAL) {
                     System.err.println(lexical.line + ":tipos incompativeis.");
                     System.exit(0);
                 }
             } else {
                 if (!_Xplus) {
-                    if (_Xtype == Symbol.TYPE_LOGICAL || _Xtype == Symbol.TYPE_STRING || _T1type == Symbol.TYPE_LOGICAL || _T1type == Symbol.TYPE_STRING) {
+                    if (_X.getType() == Symbol.TYPE_LOGICAL || _X.getType() == Symbol.TYPE_STRING || _T1.getType() == Symbol.TYPE_LOGICAL || _T1.getType() == Symbol.TYPE_STRING) {
                         System.err.println(lexical.line + ":tipos incompativeis.");
                     System.exit(0);
-                    } else if (_Xtype != _T1type){
-                        _Xtype = Symbol.TYPE_INTEGER;
+                    } else if (_X.getType() != _T1.getType()){
+                        _X.setType(Symbol.TYPE_INTEGER);
                     }
                 } else {
-                    if ((_Xtype == Symbol.TYPE_LOGICAL || _Xtype == Symbol.TYPE_STRING || _T1type == Symbol.TYPE_LOGICAL || _T1type == Symbol.TYPE_STRING) && (_Xtype != Symbol.TYPE_STRING && _T1type != Symbol.TYPE_STRING)) {
+                    if ((_X.getType() == Symbol.TYPE_LOGICAL || _X.getType() == Symbol.TYPE_STRING || _T1.getType() == Symbol.TYPE_LOGICAL || _T1.getType() == Symbol.TYPE_STRING) && (_X.getType() != Symbol.TYPE_STRING && _T1.getType() != Symbol.TYPE_STRING)) {
                         System.err.println(lexical.line + ":tipos incompativeis.");
                     System.exit(0);
-                    } else if (_Xtype != _T1type){
-                        _Xtype = Symbol.TYPE_INTEGER;
+                    } else if (_X.getType() != _T1.getType()){
+                        _X.setType(Symbol.TYPE_INTEGER);
                     }
                 }
             }
         }
-        
-        return _Xtype;
     }
 
     /**
      * Procedure that implements the terms.
      */
-    private byte T() {
-        byte _Ttype, _F1type;
+    private void T(AuxiliarySymbol _T) {
+        AuxiliarySymbol _F1 = new AuxiliarySymbol();
         boolean _Tlogical, _Ttimes;
         
         // T -> F {(TIMES | DIVIDE | AND) F}        
         // semantic action [T18]
-        _Ttype = F();
+        F(_T);
 
         while (s.getToken() == SymbolTable.TIMES || s.getToken() == SymbolTable.DIVIDE || s.getToken() == SymbolTable.AND) {
             // semantic action [H21]
@@ -577,41 +571,38 @@ public class Parser {
                 }
             }
             matchToken(s.getToken());
-            _F1type = F();
+            F(_F1);
             
             // semantic action [T19]
             if (_Tlogical) {
-                if (_Ttype != Symbol.TYPE_LOGICAL || _F1type != Symbol.TYPE_LOGICAL) {
+                if (_T.getType() != Symbol.TYPE_LOGICAL || _F1.getType() != Symbol.TYPE_LOGICAL) {
                     System.err.println(lexical.line + ":tipos incompativeis.");
                     System.exit(0);
                 }
             } else {
-                if (_Ttype == Symbol.TYPE_LOGICAL || _Ttype == Symbol.TYPE_STRING || _F1type != Symbol.TYPE_LOGICAL || _F1type == Symbol.TYPE_STRING) {
+                if (_T.getType() == Symbol.TYPE_LOGICAL ||_T.getType() == Symbol.TYPE_STRING || _F1.getType() == Symbol.TYPE_LOGICAL || _F1.getType() == Symbol.TYPE_STRING) {
                     System.err.println(lexical.line + ":tipos incompativeis.");
                     System.exit(0);
-                } else if (_Ttype != _F1type) {
-                    _Ttype = Symbol.TYPE_INTEGER;
+                } else if (_T.getType() != _F1.getType()) {
+                    _T.setType(Symbol.TYPE_INTEGER);
                 }
             }
         }
-        
-        return _Ttype;
     }
 
     /**
      * Procedure that implements the factors.
      */
-    private byte F() {
-        byte _Ftype, _F1type;
+    private void F(AuxiliarySymbol _F) {
+        AuxiliarySymbol _F1 = new AuxiliarySymbol();
         Symbol _Fid, _Fconst;
-        _Ftype = Byte.MAX_VALUE;
         
         // F -> OPPAR E CLPAR
         if (s.getToken() == SymbolTable.OPPAR) {
             matchToken(SymbolTable.OPPAR);
             
             // semantic action [T20]
-            _Ftype = E();
+            E(_F);
             
             matchToken(SymbolTable.CLPAR);
         } // F -> ID
@@ -626,29 +617,27 @@ public class Parser {
             } 
             
             // semantic action [T21]
-            _Ftype = table.searchSymbol(_Fid.getLexeme()).getType();
+            _F.setType(table.searchSymbol(_Fid.getLexeme()).getType());
         } // F -> CONST
         else if (s.getToken() == SymbolTable.CONST) {
             _Fconst = s;
             matchToken(SymbolTable.CONST);
             
             // semantic action [T22]
-            _Ftype = _Fconst.getType();
+            _F.setType(_Fconst.getType());
         } // F -> NOT F
         else {
             matchToken(SymbolTable.NOT);
-            _F1type = F();
+            F(_F1);
             
             // semantic action [T23]
-            if (_F1type != Symbol.TYPE_LOGICAL) {
+            if (_F1.getType() != Symbol.TYPE_LOGICAL) {
                 System.err.println(lexical.line + ":tipos incompativeis.");
                 System.exit(0);
             } else {
-                _Ftype = Symbol.TYPE_LOGICAL;
+                _F.setType(Symbol.TYPE_LOGICAL);
             }
         }
-        
-        return _Ftype;
     }
 
     /**
