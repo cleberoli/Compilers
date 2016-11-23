@@ -443,7 +443,7 @@ public class LexicalAnalyzer {
                     System.err.println(line + ":lexema nao indentificao [" + lexeme + "].");
                     System.exit(0);
                 } else {
-                    lexeme = lexeme.substring(1, lexeme.length() - 2) + "$";
+                    lexeme = lexeme.substring(1, lexeme.length() - 1) + "$";
                 }
                 s = new Symbol(lexeme, SymbolTable.CONST, Symbol.TYPE_STRING);
             } else {

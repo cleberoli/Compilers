@@ -1,4 +1,4 @@
-/* nao deveria funcionar */
+
 int n;
 int m;
 boolean f <- TRUE;

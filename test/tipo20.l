@@ -1,6 +1,8 @@
 boolean naoTerminou <- FALSE;
 int n <- 2, m <- 0, MAXITER<-25544;
 string st <- "dddd";
+final t <- "aaa";
+final bla <- 150;
 string nome;
 boolean verdadeiro;
 
