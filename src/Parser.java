@@ -198,8 +198,8 @@ public class Parser {
                     }
                 } else if (_D.getType() == Symbol.TYPE_LOGICAL) {
                     table.searchSymbol(_Did.getLexeme()).setAddress(m.allocateLogical());
-
-                    if (_Did.getLexeme().equals("TRUE")) {
+                    
+                    if (_Dconst.getLexeme().equals("TRUE")) {
                         b.add("byte 255                ;var. boolean");
                     } else {
                         b.add("byte 0                 ;var. boolean");
@@ -288,7 +288,7 @@ public class Parser {
                     } else if (_D.getType() == Symbol.TYPE_LOGICAL) {
                         table.searchSymbol(_Did.getLexeme()).setAddress(m.allocateLogical());
 
-                        if (_Did.getLexeme().equals("TRUE")) {
+                        if (_Dconst.getLexeme().equals("TRUE")) {
                             b.add("byte 255                ;var. boolean");
                         } else {
                             b.add("byte 0                 ;var. boolean");
@@ -525,6 +525,7 @@ public class Parser {
             
             // semantic action [C8]
             String labelFalse = l.newLabel();
+            String labelEnd = l.newLabel();
             
             {
                 b.add("mov AL, DS:[" + _C.getAddress() + "]");
@@ -573,6 +574,7 @@ public class Parser {
                     
                     // semantic action [C9]
                     {
+                        b.add("jmp " + labelEnd);
                         b.add(labelFalse + ":");
                     }
 
@@ -593,6 +595,8 @@ public class Parser {
             // semantic action [C10]
             if (!_Celse) {
                 b.add(labelFalse + ":");
+            } else {
+                b.add(labelEnd + ":");
             }
         } // C -> SEMICOLON
         else if (s.getToken() == SymbolTable.SEMICOLON) {
@@ -1201,14 +1205,14 @@ public class Parser {
                 if (_F1.getType() == Symbol.TYPE_BYTE) {
                     b.add("mov AL, DS:[" + _F1.getAddress() + "]");
                     b.add("cbw");
-                    b.add("mov DX, AX");
+                    b.add("mov BX, AX");
                 } else {
-                    b.add("mov DX, DS:[" + _F1.getAddress() + "]");
+                    b.add("mov BX, DS:[" + _F1.getAddress() + "]");
                 }
                 
                 b.add("mov AX, CX");
                 b.add("cwd");
-                b.add("idiv DX");
+                b.add("idiv BX");
                 
                 _T.setAddress(m.allocateTemporaryInteger());
                 b.add("mov DS:[" + _T.getAddress() + "], AX");
@@ -1300,7 +1304,7 @@ public class Parser {
             _F.setAddress(m.allocateTemporaryLogical());
             b.add("mov AL, DS:[" + _F1.getAddress() + "]");
             b.add("not AL");
-            b.add("DS:[" + _F.getAddress() + "], AL");
+            b.add("mov DS:[" + _F.getAddress() + "], AL");
         }
     }
 
